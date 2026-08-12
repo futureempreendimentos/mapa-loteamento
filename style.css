@@ -77,3 +77,78 @@ body {
     display: inline-block;
     transform-origin: center center;
 }
+
+.botao-localizacao {
+    width: 34px;
+    height: 34px;
+
+    background: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    font-size: 22px;
+    line-height: 28px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botao-localizacao:hover {
+    background: #f4f4f4;
+}
+
+/* ==========================
+BOTÕES DE NAVEGAÇÃO
+========================== */
+
+.botoes-navegacao {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.botao-navegacao {
+    width: 34px;
+    height: 34px;
+
+    background: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botao-navegacao:hover {
+    background: #f4f4f4;
+}
+
+.botao-loteamento {
+    width: 34px;
+    height: 34px;
+
+    background: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botao-loteamento:hover {
+    background: #f4f4f4;
+}

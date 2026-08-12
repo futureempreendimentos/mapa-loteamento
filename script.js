@@ -40,6 +40,8 @@ function carregarPoligono(arquivo, corPreenchimento, corContorno, espessura) {
 
 const map = L.map('map');
 
+let limitesLoteamento = null;
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap'
 }).addTo(map);
@@ -61,9 +63,11 @@ fetch('dados/Ruas_web_4326.geojson')
             }
         });
 
-        ruas.addTo(map);
+       ruas.addTo(map);
 
-        map.fitBounds(ruas.getBounds());
+limitesLoteamento = ruas.getBounds();
+
+map.fitBounds(limitesLoteamento);
 
     })
     .catch(error => console.error(error));
@@ -318,7 +322,6 @@ atualizarEscalaRotulos();
 
 let marcadorLocalizacao = null;
 let circuloPrecisao = null;
-let primeiraLocalizacao = true;
 
 function iniciarLocalizacao() {
 
@@ -367,13 +370,6 @@ function iniciarLocalizacao() {
                 circuloPrecisao.setRadius(precisao);
             }
 
-            // Centraliza somente quando encontra a pessoa pela primeira vez
-            if (primeiraLocalizacao) {
-
-                map.setView(coordenadas, 19);
-
-                primeiraLocalizacao = false;
-            }
 
         },
 
@@ -396,3 +392,147 @@ function iniciarLocalizacao() {
 }
 
 iniciarLocalizacao();
+
+// =========================
+// BOTÃO: MINHA LOCALIZAÇÃO
+// =========================
+
+const BotaoLocalizacao = L.Control.extend({
+
+    options: {
+        position: 'topleft'
+    },
+
+    onAdd: function() {
+
+        const botao = L.DomUtil.create('button', 'botao-localizacao');
+
+        botao.innerHTML = '◎';
+        botao.title = 'Minha localização';
+
+        L.DomEvent.disableClickPropagation(botao);
+
+        L.DomEvent.on(botao, 'click', function() {
+
+            if (marcadorLocalizacao) {
+
+                map.setView(
+                    marcadorLocalizacao.getLatLng(),
+                    19,
+                    {
+                        animate: true
+                    }
+                );
+
+            } else {
+
+                alert('Aguardando sua localização...');
+
+            }
+
+        });
+
+        return botao;
+    }
+});
+
+map.addControl(new BotaoLocalizacao());
+
+// =========================
+// BOTÕES DE NAVEGAÇÃO
+// =========================
+
+const DESTINO = {
+    latitude: -20.426571,
+    longitude: -40.358989
+};
+
+const BotoesNavegacao = L.Control.extend({
+
+    options: {
+        position: 'topleft'
+    },
+
+    onAdd: function() {
+
+        const container = L.DomUtil.create('div', 'botoes-navegacao');
+
+        // Impede que o clique nos botões interfira no mapa
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+
+        // WAZE
+        const botaoWaze = L.DomUtil.create(
+            'button',
+            'botao-navegacao botao-waze',
+            container
+        );
+
+        botaoWaze.innerHTML = 'W';
+        botaoWaze.title = 'Abrir no Waze';
+
+        L.DomEvent.on(botaoWaze, 'click', function() {
+
+            const urlWaze =
+                `https://www.waze.com/ul?ll=${DESTINO.latitude},${DESTINO.longitude}&navigate=yes`;
+
+            window.open(urlWaze, '_blank');
+        });
+
+
+        // GOOGLE MAPS
+        const botaoMaps = L.DomUtil.create(
+            'button',
+            'botao-navegacao botao-maps',
+            container
+        );
+
+        botaoMaps.innerHTML = 'G';
+        botaoMaps.title = 'Abrir no Google Maps';
+
+        L.DomEvent.on(botaoMaps, 'click', function() {
+
+            const urlMaps =
+                `https://www.google.com/maps/dir/?api=1&destination=${DESTINO.latitude},${DESTINO.longitude}`;
+
+            window.open(urlMaps, '_blank');
+        });
+
+        return container;
+    }
+});
+
+map.addControl(new BotoesNavegacao());
+
+// =========================
+// BOTÃO: VER LOTEAMENTO
+// =========================
+
+const BotaoLoteamento = L.Control.extend({
+
+    options: {
+        position: 'topleft'
+    },
+
+    onAdd: function() {
+
+        const botao = L.DomUtil.create('button', 'botao-loteamento');
+
+        botao.innerHTML = '⌂';
+        botao.title = 'Ver loteamento';
+
+        L.DomEvent.disableClickPropagation(botao);
+
+        L.DomEvent.on(botao, 'click', function() {
+
+            if (limitesLoteamento) {
+                map.fitBounds(limitesLoteamento);
+            }
+
+        });
+
+        return botao;
+    }
+});
+
+map.addControl(new BotaoLoteamento());
